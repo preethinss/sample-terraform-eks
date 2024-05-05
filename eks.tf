@@ -1,6 +1,5 @@
 provider "aws" {
-  region = var.aws_region
-  profile = "PowerUserAccess-ops-458448153505"
+  region  = var.aws_region
 }
 
 # IAM Role for EKS to have access to the appropriate resources
@@ -38,10 +37,10 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly-EK
 
 ## Create the EKS cluster
 resource "aws_eks_cluster" "preethi-eks" {
-  name = "preethi-eks-cluster"
+  name     = "preethi-eks-cluster"
   role_arn = aws_iam_role.eks-iam-role.arn
-  
-  
+
+
   vpc_config {
     subnet_ids = module.vpc.private_subnets
   }
@@ -92,7 +91,7 @@ resource "aws_eks_node_group" "worker-node-group" {
   node_group_name = "preethi-workernodes"
   node_role_arn   = aws_iam_role.workernodes.arn
   subnet_ids      = module.vpc.private_subnets
-  instance_types = ["t2.medium"]
+  instance_types  = ["t2.medium"]
 
   scaling_config {
     desired_size = 1
