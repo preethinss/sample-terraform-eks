@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 # IAM Role for EKS to have access to the appropriate resources
-resource "aws_iam_role" "eks-iam-role" {
+resource "aws_iam_role" "eks_iam_role" {
   name = "preethi-eks-iam-role"
 
   path = "/"
@@ -28,17 +28,17 @@ EOF
 ## Attach the IAM policy to the IAM role
 resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.eks-iam-role.name
+  role       = aws_iam_role.eks_iam_role.name
 }
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly-EKS" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks-iam-role.name
+  role       = aws_iam_role.eks_iam_role.name
 }
 
 ## Create the EKS cluster
 resource "aws_eks_cluster" "preethi-eks" {
   name     = "preethi-eks-cluster"
-  role_arn = aws_iam_role.eks-iam-role.arn
+  role_arn = aws_iam_role.eks_iam_role.arn
 
 
   vpc_config {
@@ -46,7 +46,7 @@ resource "aws_eks_cluster" "preethi-eks" {
   }
 
   depends_on = [
-    aws_iam_role.eks-iam-role,
+    aws_iam_role.eks_iam_role,
   ]
 }
 
