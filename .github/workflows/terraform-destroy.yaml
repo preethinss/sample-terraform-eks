@@ -3,7 +3,7 @@ name: Terraform Destroy
 on:
   push:
     branches:
-      - terraform-pr-1
+      - main
 
 jobs:
   destroy:
