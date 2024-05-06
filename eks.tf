@@ -1,5 +1,5 @@
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
 }
 
 # IAM Role for EKS to have access to the appropriate resources
