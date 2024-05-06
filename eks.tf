@@ -4,13 +4,13 @@ provider "aws" {
 
 # IAM Role for EKS to have access to the appropriate resources
 resource "aws_iam_role" "eks_iam_role" {
-  name = "preethi-eks-iam-role"
+  name = "preethi_eks_iam_role"
 
   path = "/"
 
   assume_role_policy = <<EOF
 {
-  "Version": "2012-10-17",
+  "Version": "2012_10_17",
   "Statement": [
     {
       "Effect": "Allow",
@@ -30,14 +30,14 @@ resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_iam_role.name
 }
-resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly-EKS" {
+resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly_EKS" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_iam_role.name
 }
 
 ## Create the EKS cluster
-resource "aws_eks_cluster" "preethi-eks" {
-  name     = "preethi-eks-cluster"
+resource "aws_eks_cluster" "preethi_eks" {
+  name     = "preethi_eks_cluster"
   role_arn = aws_iam_role.eks_iam_role.arn
 
 
@@ -52,7 +52,7 @@ resource "aws_eks_cluster" "preethi-eks" {
 
 ## Worker Nodes
 resource "aws_iam_role" "workernodes" {
-  name = "eks-node-group-example"
+  name = "eks_node_group_example"
 
   assume_role_policy = jsonencode({
     Statement = [{
@@ -86,9 +86,9 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   role       = aws_iam_role.workernodes.name
 }
 
-resource "aws_eks_node_group" "worker-node-group" {
-  cluster_name    = aws_eks_cluster.preethi-eks.name
-  node_group_name = "preethi-workernodes"
+resource "aws_eks_node_group" "worker_node_group" {
+  cluster_name    = aws_eks_cluster.preethi_eks.name
+  node_group_name = "preethi_workernodes"
   node_role_arn   = aws_iam_role.workernodes.arn
   subnet_ids      = module.vpc.private_subnets
   instance_types  = ["t2.medium"]
