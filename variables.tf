@@ -34,15 +34,6 @@ variable "enable_dns_support_value" {
   description = "enable dns support"
 }
 
-variable "subnets_value" {
-  default = {
-    "private_subnets" = ["10.0.1.0/24", "10.0.2.0/24"]
-    "public_subnets"  = ["10.0.4.0/24", "10.0.5.0/24"]
-  }
-  type        = map(set(string))
-  description = "public and private subnets"
-}
-
 variable "instance_types_value" {
   default     = ["t2.medium"]
   type        = set(string)
