@@ -37,7 +37,7 @@ variable "enable_dns_support_value" {
 variable "instance_types_value" {
   default     = ["t2.medium"]
   type        = set(string)
-  description = "instance type value"
+  description = "instance type"
 }
 
 
