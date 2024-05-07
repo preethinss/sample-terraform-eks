@@ -34,11 +34,7 @@ variable "enable_dns_support_value" {
   description = "enable dns support"
 }
 
-variable "instance_types_value" {
-  default     = ["t2.medium"]
-  type        = list(string)
-  description = "instance type"
-}
+
 
 
 
