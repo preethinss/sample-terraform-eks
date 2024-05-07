@@ -13,7 +13,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 
-  name = "preethi-eks-vpc"
+  name = var.vpc_name
   cidr = var.vpc_cidr
   azs  = data.aws_availability_zones.available.names
 
