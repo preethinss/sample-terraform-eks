@@ -21,19 +21,9 @@ module "vpc" {
 
   //public_subnets = ["10.0.4.0/24", "10.0.5.0/24"]
 
-  private_subnets = {
-    for key, value in var.private_subnets :
-    key => {
-      cidr_block = value
-    }
-  }
+  private_subnets = [var.private_subnets.subnet1, var.private_subnets.subnet2]
 
-  public_subnets = {
-    for key, value in var.public_subnets :
-    key => {
-      cidr_block = value
-    }
-  }
+  public_subnets = [var.public_subnets.subnet1, var.public_subnets.subnet2]
 
   enable_nat_gateway   = var.enable_nat_gateway_value
   single_nat_gateway   = var.single_nat_gateway_value
