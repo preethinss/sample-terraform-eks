@@ -34,7 +34,11 @@ variable "enable_dns_support_value" {
   description = "enable dns support"
 }
 
-
+variable "instance_types" {
+  description = "A set of instance types for the worker nodes"
+  type        = set(string)
+  default     = ["t2.medium"]
+}
 
 
 
