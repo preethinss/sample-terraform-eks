@@ -92,8 +92,8 @@ resource "aws_eks_node_group" "worker_node_group" {
   node_role_arn   = aws_iam_role.workernodes.arn
   subnet_ids      = module.vpc.private_subnets
 
-  for_each       = var.instance_types_value
-  instance_types = each.value
+  count          = length(var.instance_types_value)
+  instance_types = var.instance_types_value[count.index]
 
   scaling_config {
     desired_size = 1
