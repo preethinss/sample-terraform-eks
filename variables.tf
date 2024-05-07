@@ -40,6 +40,24 @@ variable "instance_types" {
   default     = ["t2.medium"]
 }
 
+variable "private_subnets" {
+  description = "A map of CIDR blocks for private subnets"
+  type        = map(string)
+  default = {
+    subnet1 = "10.0.1.0/24"
+    subnet2 = "10.0.2.0/24"
+  }
+}
+
+variable "public_subnets" {
+  description = "A map of CIDR blocks for public subnets"
+  type        = map(string)
+  default = {
+    subnet1 = "10.0.4.0/24"
+    subnet2 = "10.0.5.0/24"
+  }
+}
+
 
 
 

@@ -17,9 +17,23 @@ module "vpc" {
   cidr = var.vpc_cidr
   azs  = data.aws_availability_zones.available.names
 
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  //private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
 
-  public_subnets = ["10.0.4.0/24", "10.0.5.0/24"]
+  //public_subnets = ["10.0.4.0/24", "10.0.5.0/24"]
+
+  private_subnets = {
+    for key, value in var.private_subnets :
+    key => {
+      cidr_block = value
+    }
+  }
+
+  public_subnets = {
+    for key, value in var.public_subnets :
+    key => {
+      cidr_block = value
+    }
+  }
 
   enable_nat_gateway   = var.enable_nat_gateway_value
   single_nat_gateway   = var.single_nat_gateway_value
