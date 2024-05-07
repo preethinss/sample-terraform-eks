@@ -91,7 +91,9 @@ resource "aws_eks_node_group" "worker_node_group" {
   node_group_name = "preethi_workernodes"
   node_role_arn   = aws_iam_role.workernodes.arn
   subnet_ids      = module.vpc.private_subnets
-  instance_types  = ["t2.medium"]
+
+  for_each       = var.instance_types_value
+  instance_types = each.value
 
   scaling_config {
     desired_size = 1

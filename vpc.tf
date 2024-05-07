@@ -13,28 +13,22 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 
-  name                 = "preethi-eks-vpc"
-  cidr                 = var.vpc_cidr
-  azs                  = data.aws_availability_zones.available.names
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24"]
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+  name = "preethi-eks-vpc"
+  cidr = var.vpc_cidr
+  azs  = data.aws_availability_zones.available.names
+
+  for_each        = var.subnets_value
+  private_subnets = each.value["private_subnets"]
+
+  public_subnets = each.value["public_subnets"]
+
+  enable_nat_gateway   = var.enable_nat_gateway_value
+  single_nat_gateway   = var.single_nat_gateway_value
+  enable_dns_hostnames = var.enable_dns_hostnames_value
+  enable_dns_support   = var.enable_dns_support_value
 
   tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-  }
-
-  public_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                      = "1"
-  }
-
-  private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = "1"
   }
 
 }
