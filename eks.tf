@@ -37,7 +37,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly_EK
 
 ## Create the EKS cluster
 resource "aws_eks_cluster" "preethi_eks" {
-  name     = "preethi_eks_cluster"
+  name     = local.cluster_name
   role_arn = aws_iam_role.eks_iam_role.arn
 
 
@@ -91,7 +91,9 @@ resource "aws_eks_node_group" "worker_node_group" {
   node_group_name = "preethi_workernodes"
   node_role_arn   = aws_iam_role.workernodes.arn
   subnet_ids      = module.vpc.private_subnets
-  instance_types  = ["t2.medium"]
+
+  for_each       = var.instance_types
+  instance_types = [each.value]
 
   scaling_config {
     desired_size = 1
