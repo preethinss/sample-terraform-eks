@@ -1,4 +1,4 @@
-name: "Terraform workflow"
+name: "Terraform actions"
 on:
   push:
     branches:
@@ -116,9 +116,9 @@ jobs:
       - name: Terraform Apply 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ terraform.workspace}}" == 'dev' ]]; then
+          if [[ "${{ WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ terraform.workspace }}" == 'stage' ]]; then
+          elif [[ "${{ WORKSPACE_NAME }}" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
@@ -128,9 +128,9 @@ jobs:
       - name: Terraform Destroy 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ terraform.workspace }}" == 'dev' ]]; then
+          if [[ "${{ WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ terraform.workspace }}" == 'stage' ]]; then
+          elif [[ "${{ WORKSPACE_NAME }}" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
