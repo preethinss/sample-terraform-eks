@@ -1,4 +1,4 @@
-vpc_name                   = "preethi-eks-vpc"
+vpc_name                   = "preethi-eks-vpc-dev"
 vpc_cidr                   = "10.0.0.0/16"
 aws_region                 = "us-west-1"
 enable_nat_gateway_value   = true
@@ -17,7 +17,3 @@ public_subnets = {
 worker_node_desired_size = 1
 worker_node_max_size     = 1
 worker_node_min_size     = 1
-
-
-
-
