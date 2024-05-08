@@ -116,20 +116,19 @@ jobs:
       - name: Terraform Apply 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ github.ref }}" == 'refs/heads/dev' ]]; then
+          if [[ "${{ github.base_ref }}" == 'refs/heads/dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ github.ref }}" == 'refs/heads/stage' ]]; then
+          elif [[ "${{ github.base_ref }}" == 'refs/heads/stage' ]]; then
             VAR_FILE='stage.tfvars'
           fi
-    
           terraform apply -auto-approve --var-file=$VAR_FILE
           
       - name: Terraform Destroy 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ github.ref }}" == 'refs/heads/dev' ]]; then
+          if [[ "${{ github.base_ref }}" == 'refs/heads/dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ github.ref }}" == 'refs/heads/stage' ]]; then
+          elif [[ "${{ github.base_ref }}" == 'refs/heads/stage' ]]; then
             VAR_FILE='stage.tfvars'
           fi
           terraform destroy -auto-approve --var-file=$VAR_FILE
