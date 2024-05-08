@@ -131,7 +131,7 @@ jobs:
       - name: Terraform Destroy 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ env.WORKSPACE_NAME }}"== 'dev' ]]; then
+          if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
           elif [[ "${{ env.WORKSPACE_NAME }}" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
