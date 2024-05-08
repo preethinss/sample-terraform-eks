@@ -116,9 +116,10 @@ jobs:
       - name: Terraform Apply 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ WORKSPACE_NAME }}" == 'dev' ]]; then
+          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
+          if [[ "$BRANCH" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ WORKSPACE_NAME }}" == 'stage' ]]; then
+          elif [[ "$BRANCH" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
@@ -128,9 +129,10 @@ jobs:
       - name: Terraform Destroy 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ WORKSPACE_NAME }}" == 'dev' ]]; then
+          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
+          if [[ "$BRANCH" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ WORKSPACE_NAME }}" == 'stage' ]]; then
+          elif [[ "$BRANCH" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
