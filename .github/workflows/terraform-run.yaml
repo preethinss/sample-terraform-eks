@@ -60,7 +60,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          if [[ "$(terraform workspace show)" == 'dev' || github.event_name == 'pull_request' ]]; then
+          if [[ "${{ github.ref }}" == 'refs/heads/dev' || github.event_name == 'pull_request' ]]; then
             VAR_FILE='dev.tfvars'
           else
             VAR_FILE='stage.tfvars'
@@ -111,7 +111,7 @@ jobs:
 
       - name: Terraform Apply 
         run: |
-          if [[ "$(terraform workspace show)" == 'dev' || github.ref == 'refs/heads/main' && github.event_name == 'push' ]]; then
+          if [[ "${{ github.ref }}" == 'refs/heads/dev' || github.ref == 'refs/heads/main' && github.event_name == 'push' ]]; then
             VAR_FILE='dev.tfvars'
           else
             VAR_FILE='stage.tfvars'
@@ -120,7 +120,7 @@ jobs:
           
       - name: Terraform Destroy 
         run: |
-          if [[ "$(terraform workspace show)" == 'dev' || github.ref == 'refs/heads/main' && github.event_name == 'push' ]]; then
+          if [[ "${{ github.ref }}" == 'refs/heads/dev' || github.ref == 'refs/heads/main' && github.event_name == 'push' ]]; then
             VAR_FILE='dev.tfvars'
           else
             VAR_FILE='stage.tfvars'
