@@ -46,7 +46,11 @@ jobs:
           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
         run: |
           terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
-          WORKSPACE_NAME=${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/dev') ? 'dev' : 'stage' }}
+          if [[ "${{ github.event_name }}" == 'pull_request' && "${{ github.ref }}" == 'refs/heads/dev' ]]; then
+            WORKSPACE_NAME='dev'
+          else
+            WORKSPACE_NAME='stage'
+          fi
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
 
       - name: Terraform Validate
@@ -56,7 +60,12 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan -no-color --var-file=${{ github.event_name == 'pull_request' ? 'pr' : github.ref == 'refs/heads/dev' ? 'dev' : 'stage' }}.tfvars 
+          if [[ "$(terraform workspace show)" == 'dev' ]]; then
+            VAR_FILE='dev.tfvars'
+          else
+            VAR_FILE='stage.tfvars'
+          fi
+          terraform plan -no-color --var-file=$VAR_FILE
         if: github.event_name == 'pull_request'
         continue-on-error: true
 
@@ -104,11 +113,22 @@ jobs:
       - name: Terraform Apply 
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          terraform apply -auto-approve --var-file=${{ github.event_name == 'push' ? 'pr' : github.ref == 'refs/heads/main' ? 'dev' : 'stage' }}.tfvars 
+          if [[ "$(terraform workspace show)" == 'dev' ]]; then
+            VAR_FILE='dev.tfvars'
+          else
+            VAR_FILE='stage.tfvars'
+          fi
+          terraform apply -auto-approve --var-file=$VAR_FILE
+          
           
 
       - name: Terraform Destroy 
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          terraform destroy -auto-approve --var-file=${{ github.event_name == 'push' ? 'pr' : github.ref == 'refs/heads/main' ? 'dev' : 'stage' }}.tfvars 
+          if [[ "$(terraform workspace show)" == 'dev' ]]; then
+            VAR_FILE='dev.tfvars'
+          else
+            VAR_FILE='stage.tfvars'
+          fi
+          terraform destroy -auto-approve --var-file=$VAR_FILE
           
