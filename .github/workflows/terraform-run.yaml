@@ -60,13 +60,12 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          if [[ "$(terraform workspace show)" == 'dev' ]]; then
+          if [[ "$(terraform workspace show)" == 'dev' || github.event_name == 'pull_request' ]]; then
             VAR_FILE='dev.tfvars'
           else
             VAR_FILE='stage.tfvars'
           fi
           terraform plan -no-color --var-file=$VAR_FILE
-        if: github.event_name == 'pull_request'
         continue-on-error: true
 
       - uses: actions/github-script@v6
@@ -120,8 +119,6 @@ jobs:
           fi
           terraform apply -auto-approve --var-file=$VAR_FILE
           
-          
-
       - name: Terraform Destroy 
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
