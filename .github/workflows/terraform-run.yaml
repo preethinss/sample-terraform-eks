@@ -47,11 +47,9 @@ jobs:
         run: |
           terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            terraform workspace new dev || true
-            terraform workspace select dev
+            terraform workspace new dev || terraform workspace select dev
           else
-            terraform workspace new stage || true
-            terraform workspace select stage
+            terraform workspace new stage || terraform workspace select stage
           fi
 
       - name: Terraform Validate
