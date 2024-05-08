@@ -52,7 +52,7 @@ jobs:
             WORKSPACE_NAME='stage'
           fi
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
-          export TF_WORKSPACE=$WORKSPACE_NAME
+          
 
       - name: Terraform Validate
         id: validate
@@ -118,9 +118,9 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           
-          if [[ "TF_WORKSPACE" == 'dev' ]]; then
+          if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "TF_WORKSPACE" == 'stage' ]]; then
+          elif [[ "${{ env.WORKSPACE_NAME }}" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
@@ -130,9 +130,9 @@ jobs:
       - name: Terraform Destroy 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "TF_WORKSPACE"== 'dev' ]]; then
+          if [[ "${{ env.WORKSPACE_NAME }}"== 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "TF_WORKSPACE" == 'stage' ]]; then
+          elif [[ "${{ env.WORKSPACE_NAME }}" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
