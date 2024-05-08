@@ -52,6 +52,7 @@ jobs:
             WORKSPACE_NAME='stage'
           fi
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
+          export TF_WORKSPACE=$WORKSPACE_NAME
 
       - name: Terraform Validate
         id: validate
@@ -116,10 +117,10 @@ jobs:
       - name: Terraform Apply 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
-          if [[ "$BRANCH" == 'dev' ]]; then
+          
+          if [[ "$TF_WORKSPACE" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "$BRANCH" == 'stage' ]]; then
+          elif [[ "$TF_WORKSPACE" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
@@ -129,10 +130,9 @@ jobs:
       - name: Terraform Destroy 
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
-          if [[ "$BRANCH" == 'dev' ]]; then
+          if [[ "$TF_WORKSPACE"== 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "$BRANCH" == 'stage' ]]; then
+          elif [[ "$TF_WORKSPACE" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
           else
             exit 0
