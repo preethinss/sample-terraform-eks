@@ -51,6 +51,7 @@ jobs:
           else
             WORKSPACE_NAME='stage'
           fi
+          echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
           
 
