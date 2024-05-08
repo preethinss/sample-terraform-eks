@@ -4,7 +4,7 @@ provider "aws" {
 
 # IAM Role for EKS to have access to the appropriate resources
 resource "aws_iam_role" "eks_iam_role" {
-  name = "preethi_eks_iam_role"
+  name = "preethi_eks_iam_role_dev"
 
   path = "/"
 
@@ -52,7 +52,7 @@ resource "aws_eks_cluster" "preethi_eks" {
 
 ## Worker Nodes
 resource "aws_iam_role" "workernodes" {
-  name = "eks_node_group_example"
+  name = "eks_node_group_example_dev"
 
   assume_role_policy = jsonencode({
     Statement = [{
@@ -88,7 +88,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
 
 resource "aws_eks_node_group" "worker_node_group" {
   cluster_name    = aws_eks_cluster.preethi_eks.name
-  node_group_name = "preethi_workernodes"
+  node_group_name = "preethi_workernodes-dev"
   node_role_arn   = aws_iam_role.workernodes.arn
   subnet_ids      = module.vpc.private_subnets
 
@@ -96,9 +96,9 @@ resource "aws_eks_node_group" "worker_node_group" {
   instance_types = [each.value]
 
   scaling_config {
-    desired_size = 1
-    max_size     = 1
-    min_size     = 1
+    desired_size = var.worker_node_desired_size
+    max_size     = var.worker_node_max_size
+    min_size     = var.worker_node_min_size
   }
 
   depends_on = [

@@ -32,7 +32,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.2.5
+          terraform_version: 1.8.1
 
       - name: Terraform fmt
         id: fmt
@@ -44,7 +44,15 @@ jobs:
         env:
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
-        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
+        run: |
+          terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            terraform workspace new dev || true
+            terraform workspace select dev
+          else
+            terraform workspace new stage || true
+            terraform workspace select stage
+          fi
 
       - name: Terraform Validate
         id: validate
@@ -52,7 +60,12 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            terraform plan -no-color --var-file=dev.tfvars
+          else
+            terraform plan -no-color --var-file=stage.tfvars
+          fi
         if: github.event_name == 'pull_request'
         continue-on-error: true
 
@@ -97,10 +110,21 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
-      - name: Terraform Apply
+      - name: Terraform Apply 
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
+        run: |
+          |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            terraform apply -auto-approve -input=false --var-file=dev.tfvars
+          else
+            terraform apply -auto-approve -input=false --var-file=stage.tfvars
+          fi
 
-      - name: Terraform Destroy
+      - name: Terraform Destroy 
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform destroy -auto-approve -input=false
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            terraform destroy -auto-approve -input=false --var-file=dev.tfvars
+          else
+            terraform destroy -auto-approve -input=false --var-file=stage.tfvars
+          fi
