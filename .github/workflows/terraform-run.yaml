@@ -1,4 +1,4 @@
-name: "Terraform workflow"
+name: "Terraform actions"
 on:
   push:
     branches:
@@ -114,22 +114,28 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply 
-        if: github.event_name == 'pull_request' && github.base_ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ github.head_ref }}" == 'dev' ]]; then
+          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
+          if [[ "$BRANCH" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ github.head_ref }}" == 'stage' ]]; then
+          elif [[ "$BRANCH" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
+          else
+            exit 0
           fi
           terraform apply -auto-approve --var-file=$VAR_FILE
           
       - name: Terraform Destroy 
-        if: github.event_name == 'pull_request' && github.base_ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [[ "${{ github.head_ref }}" == 'dev' ]]; then
+          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
+          if [[ "$BRANCH" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-          elif [[ "${{ github.head_ref }}" == 'stage' ]]; then
+          elif [[ "$BRANCH" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
+          else
+            exit 0
           fi
           terraform destroy -auto-approve --var-file=$VAR_FILE
           
