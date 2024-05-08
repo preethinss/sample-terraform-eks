@@ -1,4 +1,4 @@
-vpc_name                   = "preethi-eks-vpc-dev"
+vpc_name                   = "preethi-eks-vpc-stage"
 vpc_cidr                   = "10.1.0.0/16"
 aws_region                 = "us-west-1"
 enable_nat_gateway_value   = true
