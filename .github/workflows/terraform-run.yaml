@@ -69,11 +69,11 @@ jobs:
         run: |
            
            if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' || ${{ github.event_name }} == 'pull_request' ]]; then
-            VAR_FILE='dev.tfvars'
-           if [[ "${{ env.WORKSPACE_NAME }}" == 'stage' || ${{ github.event_name }} == 'pull_request' ]]; then
-            VAR_FILE='stage.tfvars'
+              VAR_FILE='dev.tfvars'
+           elif [[ "${{ env.WORKSPACE_NAME }}" == 'stage' || ${{ github.event_name }} == 'pull_request' ]]; then
+              VAR_FILE='stage.tfvars'
            else
-            exit 0
+              exit 0
            fi
 
            terraform plan -no-color --var-file="$VAR_FILE"
