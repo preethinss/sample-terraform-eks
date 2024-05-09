@@ -65,15 +65,16 @@ jobs:
         id: plan
         if: github.event_name == 'pull_request' 
         run: |
-           BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
 
-           if [[ "$BRANCH" == 'dev' || ${{ github.event_name }} == 'pull_request' ]]; then
+          if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
-           else
+          elif [[ "${{ env.WORKSPACE_NAME }}" == 'stage' ]]; then
             VAR_FILE='stage.tfvars'
-           fi
-
-           terraform plan -no-color --var-file="$VAR_FILE"
+          else
+            exit 0
+          fi
+           
+          terraform plan -no-color --var-file="$VAR_FILE"
         continue-on-error: true
 
       - uses: actions/github-script@v6
