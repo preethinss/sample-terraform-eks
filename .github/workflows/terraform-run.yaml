@@ -46,10 +46,14 @@ jobs:
           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
         run: |
           terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
-          if [[ "${{ github.event_name }}" == 'pull_request' || "${{ github.ref }}" == 'refs/heads/dev' || "${{ github.ref }}" == 'refs/heads/main' ]]; then
-            WORKSPACE_NAME='dev'
-          else
-            WORKSPACE_NAME='stage'
+
+          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+            BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
+            if [[ "$BRANCH" == 'dev' || "$BRANCH" == 'main' ]]; then
+              WORKSPACE_NAME='dev'
+            else
+              WORKSPACE_NAME='stage'
+            fi
           fi
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
@@ -63,12 +67,13 @@ jobs:
         id: plan
         if: github.event_name == 'pull_request' 
         run: |
-           BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/pull/||; s|/merge$||')
-
-           if [[ "$BRANCH" == 'dev' || ${{ github.event_name }} == 'pull_request' ]]; then
-            VAR_FILE='dev.tfvars'
+           
+           if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' || ${{ github.event_name }} == 'pull_request' ]]; then
+              VAR_FILE='dev.tfvars'
+           elif [[ "${{ env.WORKSPACE_NAME }}" == 'stage' || ${{ github.event_name }} == 'pull_request' ]]; then
+              VAR_FILE='stage.tfvars'
            else
-            VAR_FILE='stage.tfvars'
+              exit 0
            fi
 
            terraform plan -no-color --var-file="$VAR_FILE"
