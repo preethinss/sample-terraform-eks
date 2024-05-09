@@ -47,15 +47,26 @@ jobs:
         run: |
           terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
-          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
-            BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
-            if [[ "$BRANCH" == 'dev' || "$BRANCH" == 'main' ]]; then
-              WORKSPACE_NAME='dev'
-            else
-              WORKSPACE_NAME='stage'
-            fi
+           
+          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then 
+          BRANCH=$(echo "${{ github.base_ref }}" | sed 's|refs/heads/||')
+          else 
+          BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')
           fi
+
+         
+          if [[ "$BRANCH" == 'dev' ]]; then
+            WORKSPACE_NAME='dev'
+          elif [[ "$BRANCH" == 'stage' ]]; then
+            WORKSPACE_NAME='stage'
+          else
+            echo "No action required for branch $BRANCH"
+            exit 0
+          fi
+
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
+    
+          
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
           
 
