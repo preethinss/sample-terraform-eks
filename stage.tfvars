@@ -14,6 +14,6 @@ public_subnets = {
   subnet1 = "10.1.4.0/24"
   subnet2 = "10.1.5.0/24"
 }
-worker_node_desired_size = 2
-worker_node_max_size     = 3
+worker_node_desired_size = 1
+worker_node_max_size     = 1
 worker_node_min_size     = 1
