@@ -55,17 +55,6 @@ jobs:
                 echo "Pull request not originating from dev or stage branch, cannot determine workspace."
                 exit 1
               fi
-          elif [[ "${{ github.event_name }}" == 'push' || "${{ github.event_name }}" == 'pull_request_target'  ]]; then
-            SOURCE_BRANCH=$(echo "${{ github.event.pull_request.base.ref }}" | sed 's|refs/heads/||')
-
-            if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
-                WORKSPACE_NAME="$SOURCE_BRANCH"
-            elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
-                WORKSPACE_NAME="$SOURCE_BRANCH"
-            else
-              echo "Pull request not merged from dev branch to main, cannot determine workspace."
-              exit 1
-            fi
           fi
           
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
