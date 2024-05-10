@@ -41,7 +41,6 @@ jobs:
 
       - name: Terraform Init
         id: init
-        if: github.event_name == 'pull_request'
         env:
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
@@ -56,6 +55,17 @@ jobs:
                 echo "Pull request not originating from dev or stage branch, cannot determine workspace."
                 exit 1
               fi
+          elif [[ "${{ github.event_name }}" == 'push']]; then
+            # Extract the source branch name from the event
+            SOURCE_BRANCH=$(echo "${{ github.event.pull_request.head.ref }}")
+            if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
+              WORKSPACE_NAME="$SOURCE_BRANCH"
+            elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
+              WORKSPACE_NAME="$SOURCE_BRANCH"
+            else
+              echo "Pull request not merged from dev branch to main, cannot determine workspace."
+              exit 1
+            fi
           fi
           
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
