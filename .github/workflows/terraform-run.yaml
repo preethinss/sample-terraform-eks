@@ -60,7 +60,7 @@ jobs:
               fi
           elif [[ "${{ github.event_name }}" == 'push' ]]; then
             # Extract the source branch name from the event
-            SOURCE_BRANCH=${{ github.head_ref }}
+            SOURCE_BRANCH=$(echo "${{ github.head_ref }}")
             if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
               WORKSPACE_NAME="$SOURCE_BRANCH"
             elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
