@@ -55,25 +55,18 @@ jobs:
                 echo "Pull request not originating from dev or stage branch, cannot determine workspace."
                 exit 1
               fi
-          elif [[ "${{ github.event_name }}" == 'push' ]]; then
-            TARGET_BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')    
-              if [[ "$TARGET_BRANCH" == 'main' ]]; then
-        
-                if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
-           
-                  SOURCE_BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
-                fi
-                if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
-                    WORKSPACE_NAME='dev'
-                elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
-                    WORKSPACE_NAME='stage'
-                else
-                   echo "Unknown source branch when merging to main."
-                   exit 1
-                fi
-              fi
+          elif [[ "${{ github.event_name }}" == 'pull_request' && "${{ github.event.pull_request.merged }}" == true ]]; then
+            SOURCE_BRANCH=$(echo "${{ github.event.pull_request.base.ref }}" | sed 's|refs/heads/||')
+            if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
+                WORKSPACE_NAME="$SOURCE_BRANCH"
+            elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
+                WORKSPACE_NAME="$SOURCE_BRANCH"
+            else
+              echo "Pull request not merged from dev branch to main, cannot determine workspace."
+              exit 1
+            fi
           fi
-
+          
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
 
