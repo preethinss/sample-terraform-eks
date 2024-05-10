@@ -55,17 +55,6 @@ jobs:
                 echo "Pull request not originating from dev or stage branch, cannot determine workspace."
                 exit 1
               fi
-          elif [[ "${{ github.event_name }}" == 'push' ||  "${{github.event.pull_request.merged}}" == true && "${{github.base_ref}}" == 'main' ]]; then
-            # Extract the source branch name from the event
-            SOURCE_BRANCH=$(echo "${{ github.head_ref }}")
-            if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
-              WORKSPACE_NAME="$SOURCE_BRANCH"
-            elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
-              WORKSPACE_NAME="$SOURCE_BRANCH"
-            else
-              echo "Pull request not merged from dev branch to main, cannot determine workspace."
-              exit 1
-            fi
           fi
           
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
@@ -133,7 +122,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply 
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'pull_request'
         run: |
           
           if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
@@ -146,7 +135,7 @@ jobs:
           terraform apply -auto-approve --var-file=$VAR_FILE
           
       - name: Terraform Destroy 
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'pull_request' 
         run: |
           if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
