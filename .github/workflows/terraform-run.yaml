@@ -59,7 +59,7 @@ jobs:
          
             TARGET_BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')
             if [[ "$TARGET_BRANCH" == 'main' ]]; then
-              SOURCE_BRANCH=$(echo "${{ github.base_ref }}" | sed 's|refs/heads/||')
+              SOURCE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
               if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
                 WORKSPACE_NAME='dev'
               elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
