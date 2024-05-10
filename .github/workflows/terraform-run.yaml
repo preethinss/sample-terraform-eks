@@ -56,7 +56,8 @@ jobs:
                 exit 1
               fi
           elif [[ "${{ github.event_name }}" == 'push' || "${{ github.event_name }}" == 'pull_request_target'  ]]; then
-            SOURCE_BRANCH=$(echo "${{ github.base_ref }}" | sed 's|refs/heads/||')
+            SOURCE_BRANCH=$(echo "${{ github.event.pull_request.base.ref }}" | sed 's|refs/heads/||')
+
             if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
                 WORKSPACE_NAME="$SOURCE_BRANCH"
             elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
