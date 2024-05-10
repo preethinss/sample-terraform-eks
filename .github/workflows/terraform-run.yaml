@@ -56,19 +56,22 @@ jobs:
                 exit 1
               fi
           elif [[ "${{ github.event_name }}" == 'push' ]]; then
-         
-            TARGET_BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')
-            if [[ "$TARGET_BRANCH" == 'main' ]]; then
-              SOURCE_BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
-              if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
-                WORKSPACE_NAME='dev'
-              elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
-                WORKSPACE_NAME='stage'
-              else
-                echo "Unknown source branch when merging to main."
-                exit 1
+            TARGET_BRANCH=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')    
+              if [[ "$TARGET_BRANCH" == 'main' ]]; then
+        
+                if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+           
+                  SOURCE_BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
+                fi
+                if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
+                    WORKSPACE_NAME='dev'
+                elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
+                    WORKSPACE_NAME='stage'
+                else
+                   echo "Unknown source branch when merging to main."
+                   exit 1
+                fi
               fi
-            fi
           fi
 
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
