@@ -4,6 +4,9 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - dev
+      - stage
 permissions:
       id-token: write # This is required for aws oidc connection
       contents: read # This is required for actions/checkout
@@ -57,7 +60,7 @@ jobs:
               fi
           elif [[ "${{ github.event_name }}" == 'push' ]]; then
             # Extract the source branch name from the event
-            SOURCE_BRANCH=$(git branch --merged main | grep -v 'main' | head -1 | xargs)
+            SOURCE_BRANCH=${{ github.head_ref }}
             if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
               WORKSPACE_NAME="$SOURCE_BRANCH"
             elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
