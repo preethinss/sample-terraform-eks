@@ -46,14 +46,17 @@ jobs:
           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
         run: |
           terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
-          if [[ "${{ github.event_name }}" == 'pull_request' || "${{ github.event_name }}" == 'push' ]]; then
-            BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
-            if [[ "$BRANCH" == 'dev' || "$BRANCH" == 'main' ]]; then
-              WORKSPACE_NAME='dev'
-            else
-              WORKSPACE_NAME='stage'
-            fi
+          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+          
+              BRANCH=$(echo "${{ github.head_ref }}" | sed 's|refs/heads/||')
+              if [[ "$BRANCH" == 'dev' || "$BRANCH" == 'stage' ]]; then
+                WORKSPACE_NAME="$BRANCH"
+              else
+                echo "Pull request not originating from dev or stage branch, cannot determine workspace."
+                exit 1
+              fi
           fi
+          
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
 
@@ -119,7 +122,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply 
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'pull_request'
         run: |
           
           if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
@@ -132,7 +135,7 @@ jobs:
           terraform apply -auto-approve --var-file=$VAR_FILE
           
       - name: Terraform Destroy 
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'pull_request' 
         run: |
           if [[ "${{ env.WORKSPACE_NAME }}" == 'dev' ]]; then
             VAR_FILE='dev.tfvars'
