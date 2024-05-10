@@ -55,7 +55,7 @@ jobs:
                 echo "Pull request not originating from dev or stage branch, cannot determine workspace."
                 exit 1
               fi
-          elif [[ "${{ github.event_name }}" == 'push']]; then
+          elif [[ "${{ github.event_name }}" == 'push' ]]; then
             # Extract the source branch name from the event
             SOURCE_BRANCH=$(echo "${{ github.event.pull_request.head.ref }}")
             if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
