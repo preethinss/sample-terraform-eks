@@ -55,6 +55,7 @@ jobs:
                 echo "Pull request not originating from dev or stage branch, cannot determine workspace."
                 exit 1
               fi
+          fi
           
           echo "WORKSPACE_NAME=$WORKSPACE_NAME" >> $GITHUB_ENV
           terraform workspace select $WORKSPACE_NAME || terraform workspace new $WORKSPACE_NAME
