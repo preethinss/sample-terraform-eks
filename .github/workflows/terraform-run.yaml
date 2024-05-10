@@ -57,7 +57,7 @@ jobs:
               fi
           elif [[ "${{ github.event_name }}" == 'push' ]]; then
             # Extract the source branch name from the event
-            SOURCE_BRANCH=$(echo "${{ github.event.pull_request.base.ref }}")
+            SOURCE_BRANCH=$(git branch --merged main | grep -v 'main' | head -1 | xargs)
             if [[ "$SOURCE_BRANCH" == 'dev' ]]; then
               WORKSPACE_NAME="$SOURCE_BRANCH"
             elif [[ "$SOURCE_BRANCH" == 'stage' ]]; then
